@@ -1,9 +1,12 @@
 from login import credentials
 from flask import Flask
-# from flask_restless import APIManager
 from flask_sqlalchemy import SQLAlchemy
-# from flask_cors import CORS, cross_origin
 import requests
+# API imports
+from flask_cors import CORS, cross_origin
+from flask import Flask, request
+from flask_restless import APIManager
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = credentials
@@ -31,3 +34,17 @@ class Image(db.Model):
 
 # Creates the tables in the specified database using the models 
 db.create_all()
+
+#------API Endpoints------#
+
+CORS(app) 
+manager = APIManager(app, flask_sqlalchemy_db=db)
+
+# Created the basic API calls for each model 
+manager.create_api(Date, methods=['GET','POST'], url_prefix=None)
+manager.create_api(Image, methods=['GET','POST'], url_prefix=None)
+
+#------run the app------#
+
+app.run(host='0.0.0.0', port=80)
+
