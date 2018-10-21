@@ -12,5 +12,5 @@ CORS(app)
 manager = APIManager(app, flask_sqlalchemy_db=db)
 
 # Created the basic API calls for each model 
-manager.create_api(Date, methods=['GET'], url_prefix=None)
-manager.create_api(Image, methods=['GET'], url_prefix=None)
+manager.create_api(Date, methods=['GET','POST'], url_prefix=None)
+manager.create_api(Image, methods=['GET','POST'], url_prefix=None)
