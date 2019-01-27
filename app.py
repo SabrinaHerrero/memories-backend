@@ -2,11 +2,16 @@ from login import credentials
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import requests
+
 # API imports
 from flask_cors import CORS, cross_origin
 from flask import Flask, request
 from flask_restless import APIManager
 
+# AWS imports
+import base64
+import boto3
+import uuid
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = credentials
@@ -42,14 +47,19 @@ def image_post_preprocessor(data=None, **kw):
    """Accepts a single argument, `data`, which is the dictionary of
    fields to set on the new instance of the model.
    """
-   # make call to S3 bucket to post image
-
-   # store url in data and remove image from data since it is not stored in the DB
-   data["link"] = "TEST"
+   dec = base64.b64decode(data["image"])
+   s3 = boto3.resource("s3")
+   key=create_temp_file('test')
+   s3.Bucket('memoriesphotos').put_object(Key=key, Body=dec,ContentType=data['type'],ACL='public-read')
+   data["link"] = "https://s3.{0}.amazonaws.com/{1}/{2}".format('us-west-1', 'memoriesphotos', key)
    del data["image"]
-
+   del data['type']
    pass
 
+
+def create_temp_file(file_name):
+    random_file_name = ''.join([str(uuid.uuid4().hex[:6]), file_name])
+    return random_file_name
 
 #------API Endpoints------#
 
